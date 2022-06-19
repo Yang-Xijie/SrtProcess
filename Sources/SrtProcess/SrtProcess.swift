@@ -8,7 +8,17 @@ public enum SrtProcess {
         public let interval: SrtInterval
         public let text: String
 
-        public let originalString: String
+        public var origin: String {
+            let startTime = String(format: "%02d", interval.start.hours) + ":" +
+                String(format: "%02d", interval.start.minutes) + ":" +
+                String(format: "%02d", interval.start.seconds) + "," +
+                String(format: "%03d", interval.start.milliseconds)
+            let endTime = String(format: "%02d", interval.end.hours) + ":" +
+                String(format: "%02d", interval.end.minutes) + ":" +
+                String(format: "%02d", interval.end.seconds) + "," +
+                String(format: "%03d", interval.end.milliseconds)
+            return "\(index)\n\(startTime) --> \(endTime)\n\(text)"
+        }
     }
 
     public struct SrtInterval: Equatable {
@@ -127,8 +137,7 @@ public enum SrtProcess {
                 parsedNodes.append(SrtNode(
                     index: nodeIndex,
                     interval: interval,
-                    text: text,
-                    originalString: originalString
+                    text: text
                 ))
             }
             return parsedNodes
