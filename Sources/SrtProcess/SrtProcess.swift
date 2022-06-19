@@ -7,6 +7,8 @@ public enum SrtProcess {
         public let index: Int
         public let interval: SrtInterval
         public let text: String
+        
+        public let originalString: String
     }
 
     public struct SrtInterval: Equatable {
@@ -85,11 +87,11 @@ public enum SrtProcess {
             let string = string.trimmingCharacters(in: .newlines)
 
             // First step, split everything by spaces and newlines
-            let nodes = string.components(separatedBy: "\n\n")
+            let originalStrings = string.components(separatedBy: "\n\n")
             var parsedNodes: SrtNodes = []
-            for (index, node) in nodes.enumerated() {
+            for (index, originalString) in originalStrings.enumerated() {
                 // Get all rows
-                let nodeRows = node.components(separatedBy: "\n")
+                let nodeRows = originalString.components(separatedBy: "\n")
 
                 // And a basic check whether it is fully declared
                 guard nodeRows.count >= 3 else {
@@ -100,7 +102,7 @@ public enum SrtProcess {
                     throw SrtParserError.badIndexDeclaration(column: 1, row: index)
                 }
 
-                let timeInterval = try parseInterval(rawString: nodeRows[1], rowOperatedOn: index + 1)
+                let interval = try parseInterval(rawString: nodeRows[1], rowOperatedOn: index + 1)
 
                 var textRows = nodeRows
                 textRows.remove(at: 0)
@@ -116,8 +118,9 @@ public enum SrtProcess {
 
                 parsedNodes.append(SrtNode(
                     index: nodeIndex,
-                    interval: timeInterval,
-                    text: text
+                    interval: interval,
+                    text: text,
+                    originalString: originalString
                 ))
             }
             return parsedNodes
