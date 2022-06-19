@@ -18,21 +18,6 @@ final class SrtProcessTests: XCTestCase {
                                           text: "line1 some text"))
     }
 
-    func testOrigin() {
-        let srt = """
-        1
-        00:00:00,720 --> 00:00:01,620
-        line1 some text
-
-        """
-        let nodes = try! srt.srtNodes()
-        XCTAssertEqual(nodes[0].origin, """
-        1
-        00:00:00,720 --> 00:00:01,620
-        line1 some text
-        """)
-    }
-
     func testMultiple() {
         let srt = """
         1
@@ -70,5 +55,20 @@ final class SrtProcessTests: XCTestCase {
                                           interval: SrtProcess.SrtInterval(start: SrtProcess.SrtTime(hours: 0, minutes: 0, seconds: 0, milliseconds: 720),
                                                                            end: SrtProcess.SrtTime(hours: 0, minutes: 0, seconds: 1, milliseconds: 620)),
                                           text: "line1 some text\nline2 some text"))
+    }
+
+    func testOrigin() {
+        let srt = """
+        1
+        00:00:00,720 --> 00:00:01,620
+        line1 some text
+
+        """
+        let nodes = try! srt.srtNodes()
+        XCTAssertEqual(nodes[0].origin, """
+        1
+        00:00:00,720 --> 00:00:01,620
+        line1 some text
+        """)
     }
 }
