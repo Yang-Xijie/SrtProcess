@@ -7,7 +7,7 @@ let package = Package(
     name: "SrtProcess",
     platforms: [
         .macOS(.v11),
-        .iOS(.v8),
+        .iOS(.v11),
     ],
     products: [
         // Products define the executables and libraries a package produces, and make them visible to other packages.
