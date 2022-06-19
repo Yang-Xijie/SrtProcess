@@ -7,20 +7,28 @@ public enum SrtProcess {
         public let index: Int
         public let interval: SrtInterval
         public let text: String
-        
+
         public let originalString: String
     }
 
     public struct SrtInterval: Equatable {
         public let start: SrtTime
         public let end: SrtTime
+
+        public var seconds: Double {
+            self.end.absoluteSeconds - self.start.absoluteSeconds
+        }
     }
 
     public struct SrtTime: Equatable {
-        let hours: Int
-        let minutes: Int
-        let seconds: Int
-        let milliseconds: Int
+        public let hours: Int
+        public let minutes: Int
+        public let seconds: Int
+        public let milliseconds: Int
+
+        public var absoluteSeconds: Double {
+            Double(hours * 3600.0 + minutes * 60.0 + seconds * 1.0 + milliseconds * 0.001)
+        }
 
         enum TimeType: String {
             case hours
