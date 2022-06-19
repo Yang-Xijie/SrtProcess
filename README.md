@@ -1,3 +1,5 @@
 # SrtProcess
 
-A description of this package.
+## References
+
+- [GitHub | ggoraa - SubtitleKit](https://github.com/ggoraa/SubtitleKit)
