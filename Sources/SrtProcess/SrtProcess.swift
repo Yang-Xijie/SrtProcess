@@ -3,18 +3,18 @@ import Foundation
 public enum SrtProcess {
     public typealias SrtNodes = [SrtNode]
 
-    public struct SrtNode {
+    public struct SrtNode: Equatable {
         public let index: Int
         public let interval: SrtInterval
         public let text: String
     }
 
-    public struct SrtInterval {
+    public struct SrtInterval: Equatable {
         public let start: SrtTime
         public let end: SrtTime
     }
 
-    public struct SrtTime {
+    public struct SrtTime: Equatable {
         let hours: Int
         let minutes: Int
         let seconds: Int
@@ -34,7 +34,7 @@ public enum SrtProcess {
             self.milliseconds = milliseconds
         }
 
-        /// input: "00:00:01,620"
+        /// input example: "00:00:01,620"
         init(srtTime: String) {
             let pattern =
                 #"(?<hours>\d\d):"# + #"(?<minutes>\d\d):"# + #"(?<seconds>\d\d),"# + #"(?<milliseconds>\d\d\d)"#
@@ -78,10 +78,12 @@ public enum SrtProcess {
     public enum SrtParser {
         public static func parse(_ string: String) throws -> SrtNodes {
             // Check whether the file is blank or not
-            if string.isBlank {
+            if string.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
                 return []
             }
-            // TODO: 去掉头尾的空白符号
+
+            let string = string.trimmingCharacters(in: .newlines)
+
             // First step, split everything by spaces and newlines
             let nodes = string.components(separatedBy: "\n\n")
             var parsedNodes: SrtNodes = []
