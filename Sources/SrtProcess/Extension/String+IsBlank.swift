@@ -5,6 +5,7 @@ extension String {
         return self.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
     }
 }
+
 extension Optional where Wrapped == String {
     var isBlank: Bool {
         if let unwrapped = self {

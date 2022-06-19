@@ -11,7 +11,7 @@ final class SrtProcessTests: XCTestCase {
         some text
         
         """
-        let nodes = try! srt.parseSrt()
+        let nodes = try! srt.srtNodes()
         XCTAssertEqual(nodes.first!.index, 1)
         XCTAssertEqual(nodes.first!.text, "some text\n")
         XCTAssertEqual(nodes.first!.interval.start.seconds, 0)

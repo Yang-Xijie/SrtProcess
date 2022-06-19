@@ -1,9 +1,9 @@
 import Foundation
 
 public enum SrtProcess {
-    public typealias SubRipNodes = [SubRipNode]
+    public typealias SrtNodes = [SrtNode]
 
-    public struct SubRipNode {
+    public struct SrtNode {
         public let index: Int
         public let interval: SrtInterval
         public let text: String
@@ -34,83 +34,71 @@ public enum SrtProcess {
             self.milliseconds = milliseconds
         }
 
+        /// input: "00:00:01,620"
         init(srtTime: String) {
-            let birthday = srtTime
-            let birthdayRange = NSRange(
-                birthday.startIndex ..< birthday.endIndex,
-                in: birthday
-            )
-
-            let capturePattern =
+            let pattern =
                 #"(?<hours>\d\d):"# + #"(?<minutes>\d\d):"# + #"(?<seconds>\d\d),"# + #"(?<milliseconds>\d\d\d)"#
-
-            let birthdayRegex = try! NSRegularExpression(
-                pattern: capturePattern,
+            let regex = try! NSRegularExpression(
+                pattern: pattern,
                 options: []
             )
-            let matches = birthdayRegex.matches(
-                in: birthday,
-                options: [],
-                range: birthdayRange
-            )
 
+            let range = NSRange(
+                srtTime.startIndex ..< srtTime.endIndex,
+                in: srtTime
+            )
+            let matches = regex.matches(
+                in: srtTime,
+                options: [],
+                range: range
+            )
             guard let match = matches.first else {
-                // Handle exception
                 fatalError()
             }
 
-            var captures: [String: Int] = [:]
-
+            var captures: [TimeType: Int] = [:]
             // For each matched range, extract the named capture group
-            for name in [TimeType.hours.rawValue, TimeType.minutes.rawValue, TimeType.seconds.rawValue, TimeType.milliseconds.rawValue] {
-                let matchRange = match.range(withName: name)
+            for timeType in [TimeType.hours, TimeType.minutes, TimeType.seconds, TimeType.milliseconds] {
+                let matchRange = match.range(withName: timeType.rawValue)
 
                 // Extract the substring matching the named capture group
-                if let substringRange = Range(matchRange, in: birthday) {
-                    let capture = String(birthday[substringRange])
-                    captures[name] = Int(capture)
+                if let substringRange = Range(matchRange, in: srtTime) {
+                    let capture = String(srtTime[substringRange])
+                    captures[timeType] = Int(capture)
                 }
             }
 
-            self.init(hours: captures[TimeType.hours.rawValue]!,
-                      minutes: captures[TimeType.minutes.rawValue]!,
-                      seconds: captures[TimeType.seconds.rawValue]!,
-                      milliseconds: captures[TimeType.milliseconds.rawValue]!)
+            self.init(hours: captures[TimeType.hours]!,
+                      minutes: captures[TimeType.minutes]!,
+                      seconds: captures[TimeType.seconds]!,
+                      milliseconds: captures[TimeType.milliseconds]!)
         }
     }
 
-    public struct SubRipParser {
-        public typealias Input = String
-        public typealias Output = SubRipNodes
-
-        public var fileContent: Input
-
-        public init(content: Input) {
-            self.fileContent = content
-        }
-
-        public func parse() throws -> Output {
+    public enum SrtParser {
+        public static func parse(_ string: String) throws -> SrtNodes {
             // Check whether the file is blank or not
-            if fileContent.isBlank {
+            if string.isBlank {
                 return []
             }
+            // TODO: 去掉头尾的空白符号
             // First step, split everything by spaces and newlines
-            let nodes = fileContent.components(separatedBy: "\n\n")
-            var parsedNodes: Output = []
+            let nodes = string.components(separatedBy: "\n\n")
+            var parsedNodes: SrtNodes = []
             for (index, node) in nodes.enumerated() {
                 // Get all rows
                 let nodeRows = node.components(separatedBy: "\n")
 
                 // And a basic check whether it is fully declared
                 guard nodeRows.count >= 3 else {
-                    throw SubRipParserError.notFullNodeDeclaration(column: 0, row: index)
+                    throw SrtParserError.notFullNodeDeclaration(column: 0, row: index)
                 }
 
                 guard let nodeIndex = Int(nodeRows[0]) else {
-                    throw SubRipParserError.badIndexDeclaration(column: 1, row: index)
+                    throw SrtParserError.badIndexDeclaration(column: 1, row: index)
                 }
 
-                let timeInterval = try parseTimeInterval(rawString: nodeRows[1], rowOperatedOn: index + 1)
+                let timeInterval = try parseInterval(rawString: nodeRows[1], rowOperatedOn: index + 1)
 
                 var textRows = nodeRows
                 textRows.remove(at: 0)
@@ -120,11 +108,11 @@ public enum SrtProcess {
                 for (index, row) in textRows.enumerated() {
                     text.append(row)
                     if index < textRows.count - 1 {
-                        text.append("\n")
+                        text.append("\n") // 这里是不是多加了一个newline啊 为什么之后会有newline呢？
                     }
                 }
 
-                parsedNodes.append(SubRipNode(
+                parsedNodes.append(SrtNode(
                     index: nodeIndex,
                     interval: timeInterval,
                     text: text
@@ -133,26 +121,26 @@ public enum SrtProcess {
             return parsedNodes
         }
 
-        private func parseTimeInterval(rawString: String, rowOperatedOn row: Int) throws -> SrtInterval {
+        private static func parseInterval(rawString: String, rowOperatedOn row: Int) throws -> SrtInterval {
             let split = rawString.components(separatedBy: " ")
 
             // Checks that verifies that the structure is alright
             guard split[0].range(of: #"\d\d:\d\d:\d\d,\d\d\d"#, options: .regularExpression) != nil else {
-                throw SubRipParserError.badTimeIntervalDeclaration(
+                throw SrtParserError.badTimeIntervalDeclaration(
                     column: 0,
                     row: row
                 )
             }
 
             guard split[1] == "-->" else {
-                throw SubRipParserError.badTimeIntervalDeclaration(
+                throw SrtParserError.badTimeIntervalDeclaration(
                     column: split[0].count + 1,
                     row: row
                 )
             }
 
             guard split[2].range(of: #"\d\d:\d\d:\d\d,\d\d\d"#, options: .regularExpression) != nil else {
-                throw SubRipParserError.badTimeIntervalDeclaration(
+                throw SrtParserError.badTimeIntervalDeclaration(
                     column: 0,
                     row: row
                 )
@@ -162,7 +150,7 @@ public enum SrtProcess {
         }
     }
 
-    public enum SubRipParserError: Error {
+    public enum SrtParserError: Error {
         case badIndexDeclaration(column: Int, row: Int)
         case badTimeIntervalDeclaration(column: Int, row: Int)
         case notFullNodeDeclaration(column: Int, row: Int)
