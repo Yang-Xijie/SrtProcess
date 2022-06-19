@@ -27,7 +27,7 @@ public enum SrtProcess {
         public let milliseconds: Int
 
         public var absoluteSeconds: Double {
-            Double(hours * 3600.0 + minutes * 60.0 + seconds * 1.0 + milliseconds * 0.001)
+            Double(hours) * 3600.0 + Double(minutes) * 60.0 + Double(seconds) * 1.0 + Double(milliseconds) * 0.001
         }
 
         enum TimeType: String {

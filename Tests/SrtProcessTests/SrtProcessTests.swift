@@ -16,7 +16,7 @@ final class SrtProcessTests: XCTestCase {
                                           interval: SrtProcess.SrtInterval(start: SrtProcess.SrtTime(hours: 0, minutes: 0, seconds: 0, milliseconds: 720),
                                                                            end: SrtProcess.SrtTime(hours: 0, minutes: 0, seconds: 1, milliseconds: 620)),
                                           text: "line1 some text",
-                                          originalText: """
+                                          originalString: """
                                           1
                                           00:00:00,720 --> 00:00:01,620
                                           line1 some text
@@ -39,7 +39,7 @@ final class SrtProcessTests: XCTestCase {
                                           interval: SrtProcess.SrtInterval(start: SrtProcess.SrtTime(hours: 0, minutes: 0, seconds: 0, milliseconds: 720),
                                                                            end: SrtProcess.SrtTime(hours: 0, minutes: 0, seconds: 1, milliseconds: 620)),
                                           text: "line1 some text",
-                                          originalText: """
+                                          originalString: """
                                           1
                                           00:00:00,720 --> 00:00:01,620
                                           line1 some text
@@ -49,7 +49,7 @@ final class SrtProcessTests: XCTestCase {
                                           interval: SrtProcess.SrtInterval(start: SrtProcess.SrtTime(hours: 0, minutes: 0, seconds: 1, milliseconds: 620),
                                                                            end: SrtProcess.SrtTime(hours: 0, minutes: 0, seconds: 5, milliseconds: 910)),
                                           text: "line2 some text",
-                                          originalText: """
+                                          originalString: """
                                           2
                                           00:00:01,620 --> 00:00:05,910
                                           line2 some text
@@ -70,7 +70,7 @@ final class SrtProcessTests: XCTestCase {
                                           interval: SrtProcess.SrtInterval(start: SrtProcess.SrtTime(hours: 0, minutes: 0, seconds: 0, milliseconds: 720),
                                                                            end: SrtProcess.SrtTime(hours: 0, minutes: 0, seconds: 1, milliseconds: 620)),
                                           text: "line1 some text\nline2 some text",
-                                          originalText: """
+                                          originalString: """
                                           1
                                           00:00:00,720 --> 00:00:01,620
                                           line1 some text
