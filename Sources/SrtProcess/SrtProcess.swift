@@ -110,7 +110,7 @@ public enum SrtProcess {
                 for (index, row) in textRows.enumerated() {
                     text.append(row)
                     if index < textRows.count - 1 {
-                        text.append("\n") // 这里是不是多加了一个newline啊 为什么之后会有newline呢？
+                        text.append("\n")
                     }
                 }
 
