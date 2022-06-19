@@ -5,11 +5,16 @@ import PackageDescription
 
 let package = Package(
     name: "SrtProcess",
+    platforms: [
+        .macOS(.v11),
+        .iOS(.v8),
+    ],
     products: [
         // Products define the executables and libraries a package produces, and make them visible to other packages.
         .library(
             name: "SrtProcess",
-            targets: ["SrtProcess"]),
+            targets: ["SrtProcess"]
+        ),
     ],
     dependencies: [
         // Dependencies declare other packages that this package depends on.
@@ -20,9 +25,11 @@ let package = Package(
         // Targets can depend on other targets in this package, and on products in packages this package depends on.
         .target(
             name: "SrtProcess",
-            dependencies: []),
+            dependencies: []
+        ),
         .testTarget(
             name: "SrtProcessTests",
-            dependencies: ["SrtProcess"]),
+            dependencies: ["SrtProcess"]
+        ),
     ]
 )

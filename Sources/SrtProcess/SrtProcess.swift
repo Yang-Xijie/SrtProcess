@@ -19,16 +19,63 @@ public enum SrtProcess {
         let minutes: Int
         let seconds: Int
         let milliseconds: Int
-        
+
+        enum TimeType: String {
+            case hours
+            case minutes
+            case seconds
+            case milliseconds
+        }
+
         init(hours: Int, minutes: Int, seconds: Int, milliseconds: Int) {
             self.hours = hours
             self.minutes = minutes
             self.seconds = seconds
             self.milliseconds = milliseconds
         }
-        
+
         init(srtTime: String) {
-            self.init(hours: 0, minutes: 0, seconds: 0, milliseconds: 0)
+            let birthday = srtTime
+            let birthdayRange = NSRange(
+                birthday.startIndex ..< birthday.endIndex,
+                in: birthday
+            )
+
+            let capturePattern =
+                #"(?<hours>\d\d):"# + #"(?<minutes>\d\d):"# + #"(?<seconds>\d\d),"# + #"(?<milliseconds>\d\d\d)"#
+
+            let birthdayRegex = try! NSRegularExpression(
+                pattern: capturePattern,
+                options: []
+            )
+            let matches = birthdayRegex.matches(
+                in: birthday,
+                options: [],
+                range: birthdayRange
+            )
+
+            guard let match = matches.first else {
+                // Handle exception
+                fatalError()
+            }
+
+            var captures: [String: Int] = [:]
+
+            // For each matched range, extract the named capture group
+            for name in [TimeType.hours.rawValue, TimeType.minutes.rawValue, TimeType.seconds.rawValue, TimeType.milliseconds.rawValue] {
+                let matchRange = match.range(withName: name)
+
+                // Extract the substring matching the named capture group
+                if let substringRange = Range(matchRange, in: birthday) {
+                    let capture = String(birthday[substringRange])
+                    captures[name] = Int(capture)
+                }
+            }
+
+            self.init(hours: captures[TimeType.hours.rawValue]!,
+                      minutes: captures[TimeType.minutes.rawValue]!,
+                      seconds: captures[TimeType.seconds.rawValue]!,
+                      milliseconds: captures[TimeType.milliseconds.rawValue]!)
         }
     }
 

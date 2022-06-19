@@ -1,10 +1,3 @@
-//
-//  String+IsBlank.swift
-//  
-//
-//  Created by Егор Яковенко on 23.02.2022.
-//
-
 import Foundation
 
 extension String {
