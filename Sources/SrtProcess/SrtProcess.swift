@@ -40,6 +40,16 @@ public enum SrtProcess {
             Double(hours) * 3600.0 + Double(minutes) * 60.0 + Double(seconds) * 1.0 + Double(milliseconds) * 0.001
         }
 
+        public var displayString: String {
+            let hh = (self.hours == 0) ? "" : "\(self.hours):"
+
+            let result = hh +
+                String(format: "%d", self.minutes) + ":" +
+                String(format: "%02d", self.seconds) + "," +
+                String(format: "%03d", self.milliseconds)
+            return result
+        }
+
         enum TimeType: String {
             case hours
             case minutes

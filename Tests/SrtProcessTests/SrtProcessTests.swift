@@ -3,6 +3,7 @@ import Foundation
 import XCTest
 
 final class SrtProcessTests: XCTestCase {
+    
     func testSingle() {
         let srt = """
         1
@@ -72,3 +73,5 @@ final class SrtProcessTests: XCTestCase {
         """)
     }
 }
+
+
